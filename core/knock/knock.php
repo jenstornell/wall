@@ -12,6 +12,8 @@ class KnockCore {
     if($this->o('callback.login')) {
       return $this->o('callback.login')($success);
     }
+
+    return $success;
   }
 
   // Logout
@@ -21,6 +23,8 @@ class KnockCore {
     if($this->o('callback.logout')) {
       return $this->o('callback.logout')($success);
     }
+
+    return $success;
   }
 
   // Check if user is authorized with post variables
@@ -29,7 +33,6 @@ class KnockCore {
     if(!isset($_POST['password'])) return;
 
     $user_filepath = $this->o('path.users') . $_POST['username'] . '.php';
-
     if(!file_exists($user_filepath)) return;
     
     $password = include($user_filepath);
@@ -39,11 +42,12 @@ class KnockCore {
   }
 
   public function isLoggedIn() {
-    if(!isset($_COOKIE[$this->o('prefix')]['username'])) return;
-    if(!isset($_COOKIE[$this->o('prefix')]['hash'])) return;
+    $prefix = $this->o('cookie.prefix');
+    if(!isset($_COOKIE[$prefix]['username'])) return;
+    if(!isset($_COOKIE[$prefix]['hash'])) return;
 
-    $hash = include($this->o('path.temp') . $_COOKIE[$this->o('prefix')]['username'] . '.php');
-    $hash_cookie = $_COOKIE[$this->o('prefix')]['hash'];
+    $hash = include($this->o('path.temp') . $_COOKIE[$prefix]['username'] . '.php');
+    $hash_cookie = $_COOKIE[$prefix]['hash'];
 
     if($hash == $hash_cookie) return true;
   }
@@ -71,14 +75,14 @@ class KnockCore {
       'path.temp' => __DIR__ . '/temp/',
       'cookie.path' => '/',
       'cookie.expires' => 2147483647,
-      'prefix' => 'knock',
-      'delay' => 2,
+      'cookie.prefix' => 'knock',
+      'delay' => rand(1000, 2000),
     ];
   }
 
   // Login user
   private function loginUser() {
-    sleep($this->o('delay'));
+    usleep($this->o('delay') * 1000);
     if(!$this->isAuthorized()) return;
 
     $hash = bin2hex(random_bytes(16));
@@ -96,22 +100,30 @@ class KnockCore {
 
   // Delete cookies
   private function deleteCookies() {
-    if(!setcookie($this->o('prefix') . '[username]', '', 0, $this->o('cookie.path'))) return;
-    if(!setcookie($this->o('prefix') . '[hash]', '', 0, $this->o('cookie.path'))) return;
+    if(!$this->setCookie('[username]', '', 0)) return;
+    if(!$this->setCookie('[hash]', '', 0)) return;
 
     return true;
   }
 
   // Write cookie on login
   private function writeCookie($hash) {
-    if(!setcookie($this->o('prefix') . '[username]', $_POST['username'], $this->o('cookie.expires'), $this->o('cookie.path'))) return;
-    if(!setcookie($this->o('prefix') . '[hash]', $hash, $this->o('cookie.expires'), $this->o('cookie.path'))) return;
+    if(!$this->setCookie('[username]', $_POST['username'])) return;
+    if(!$this->setCookie('[hash]', $hash)) return;
 
     return true;
   }
 
+  private function setCookie($key, $value, $expires = null) {
+    $expires = ($expires === null) ? $this->o('cookie.expires') : $expires;
+    return setcookie($this->o('cookie.prefix') . $key, $value, $expires, $this->o('cookie.path'));
+  }
+
   // Write temp file to disc
   private function writeFile($hash) {
+    if(!file_exists($this->o('path.temp'))) {
+      if(!mkdir($this->o('path.temp'))) return;
+    }
     return file_put_contents($this->o('path.temp') . $_POST['username'] . '.php', "<?php return '" . $hash . "';");
   }
 }

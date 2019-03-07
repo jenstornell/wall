@@ -21,12 +21,10 @@ walloption::set($options);
 
 if(isset($_GET['login'])) {
   $_POST = json_decode(file_get_contents('php://input'), true);
-  knock::login();
+  echo json_encode(['success' => knock::login()]);
 } elseif(isset($_GET['logout'])) {
   knock::logout();
   header(sprintf('Location: %s', wall::url()));
 } else {
   include __DIR__ . '/core/templates/form.php';
 }
-
-// Docs - Screenshot

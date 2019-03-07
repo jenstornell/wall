@@ -18,6 +18,18 @@ body {
 form {
   padding: 4rem;
 
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    opacity: .1;
+
+    svg {
+      width: 128px;
+    }
+  }
+
   label,
   input {
     font-family: arial;
