@@ -1,4 +1,10 @@
 <?php
+header("X-Frame-Options: sameorigin"); // Prevent iframe access
+header("X-XSS-Protection: 1; mode=block");
+header("X-Content-Type-Options: nosniff"); // Require correct MIME type for CSS and JS
+header("Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';");
+header("Referrer-Policy: no-referrer");
+
 include __DIR__ . '/core/tinyoptions.php';
 include __DIR__ . '/core/wall.php';
 include __DIR__  . '/core/knock/knock.php';
@@ -6,6 +12,8 @@ include __DIR__  . '/core/knock/knock.php';
 $options = include __DIR__ . '/options.php';
 
 walloption::default([
+  'cookie.username.key' => 'username',
+  'cookie.hash.key' => 'hash',
   'redirect.url' => wall::url(),
   'text.username' => 'Username',
   'text.password' => 'Password',
@@ -20,8 +28,13 @@ walloption::default([
 walloption::set($options);
 
 if(isset($_GET['login'])) {
-  $_POST = json_decode(file_get_contents('php://input'), true);
-  echo json_encode(['success' => knock::login()]);
+  if(knock::login()) {
+    header(sprintf('Location: %s', walloption('redirect.url')));
+    die;
+  } else {
+    header(sprintf('Location: %s', wall::url('?error')));
+    die;
+  }
 } elseif(isset($_GET['logout'])) {
   knock::logout();
   header(sprintf('Location: %s', wall::url()));
