@@ -14,7 +14,7 @@
 <?php endif; ?>
 
 <?php if(!isset($_GET['error'])) : ?>
-  <div class="message loggedin<?= (knock::isLoggedIn()) ? ' show' : ''; ?>">
+  <div class="message loggedin<?= ($knock->isLoggedIn()) ? ' show' : ''; ?>">
     <div class="text">
       <figure>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g>
@@ -26,8 +26,8 @@
       
       <?php
         $username = '';
-        if(isset($_COOKIE['knock'][walloption('cookie.username.key')])) {
-          $username = $_COOKIE['knock'][walloption('cookie.username.key')];
+        if(isset($_COOKIE['knock'][walloption('key_cookie_username')])) {
+          $username = $_COOKIE['knock'][walloption('key_cookie_username')];
         }
         echo htmlspecialchars($username, ENT_QUOTES, 'utf-8');
       ?>

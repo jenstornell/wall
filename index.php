@@ -12,8 +12,8 @@ include __DIR__  . '/core/knock/knock.php';
 $options = include __DIR__ . '/options.php';
 
 walloption::default([
-  'cookie.username.key' => 'username',
-  'cookie.hash.key' => 'hash',
+  'key_cookie_username' => 'username',
+  'key_cookie_hash' => 'hash',
   'redirect.url' => wall::url(),
   'text.username' => 'Username',
   'text.password' => 'Password',
@@ -27,8 +27,10 @@ walloption::default([
 
 walloption::set($options);
 
+$knock = new Knock(walloption());
+
 if(isset($_GET['login'])) {
-  if(knock::login()) {
+  if($knock->login()) {
     header(sprintf('Location: %s', walloption('redirect.url')));
     die;
   } else {
@@ -36,7 +38,7 @@ if(isset($_GET['login'])) {
     die;
   }
 } elseif(isset($_GET['logout'])) {
-  knock::logout();
+  $knock->logout();
   header(sprintf('Location: %s', wall::url()));
 } else {
   include __DIR__ . '/core/templates/form.php';

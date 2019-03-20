@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3
+
+- Updated Knock
+
 ## 1.2
 
 - Updated to latest version of https://github.com/jenstornell/knock
