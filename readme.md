@@ -27,7 +27,7 @@ Inside the user file you return the password. To use the password `test` you nee
 ];
 ```
 
-*You can also use `<?php return hash('sha256', 'test');`, but it's not recommended. Use it for testing purpose only!*
+*You can also use `<?php return ['password' => hash('sha256', 'test')];`, but it's not recommended. Use it for testing purpose only!*
 
 ## Options
 
