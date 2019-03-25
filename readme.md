@@ -2,7 +2,7 @@
 
 A simple PHP login form with authorization.
 
-*Version 1.3* - [Changelog](changelog.md)
+*Version 1.4* - [Changelog](changelog.md)
 
 ![Screenshot](screenshot.png)
 
